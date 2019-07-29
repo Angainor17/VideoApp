@@ -25,6 +25,9 @@ android {
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
 
+    implementation kotlinCore.core
+    implementation kodein.core
+
     implementation androidx.appcompat
     implementation androidx.coreKtx
     implementation androidx.constraintlayout
@@ -32,8 +35,7 @@ dependencies {
     implementation androidx.liveData
     implementation androidx.navigationFragment
     implementation androidx.navigationUI
-
-
+    
     testImplementation test.junit
     androidTestImplementation test.testRunner
     androidTestImplementation test.espresso
