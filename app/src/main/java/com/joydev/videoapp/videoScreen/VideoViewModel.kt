@@ -14,8 +14,22 @@ private const val INIT_HTML =
 class VideoViewModel : ViewModel() {
 
     val htmlLiveData: MutableLiveData<Url> = MutableLiveData()
+    val loadingLiveData: MutableLiveData<Boolean> = MutableLiveData()
 
     fun loadInitUrl() {
         htmlLiveData.postValue(Url(INIT_HTML))
+        loadingLiveData.postValue(true)
+    }
+
+    fun onWebViewError() {
+        stopLoading()
+    }
+
+    fun onPageFinished() {
+        stopLoading()
+    }
+
+    private fun stopLoading() {
+        loadingLiveData.postValue(false)
     }
 }

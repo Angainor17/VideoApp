@@ -12,6 +12,10 @@ import com.joydev.videoapp.R
 import com.joydev.videoapp.utils.getScreenWidth
 import kotlinx.android.synthetic.main.fragment_video.*
 
+private const val VIDEO_WIDTH_PERCENT = 97.5f
+private const val DATA_MIME_TYPE = "text/html"
+private const val DATA_ENCODING = "UTF-8"
+
 class VideoFragment : Fragment() {
 
     private lateinit var viewModel: VideoViewModel
@@ -30,6 +34,10 @@ class VideoFragment : Fragment() {
     }
 
     private fun initViews() {
+        swipeRefresh.setOnRefreshListener {
+            viewModel.loadInitUrl()
+        }
+
         webView.setInitialScale(getInitialScale())
         webView.settings.apply {
             javaScriptEnabled = true
@@ -40,12 +48,29 @@ class VideoFragment : Fragment() {
 
         webView.webChromeClient = object : WebChromeClient() {}
         webView.webViewClient = object : WebViewClient() {
-            override fun shouldOverrideUrlLoading(view: WebView?, url: String?): Boolean {
-                return false
+
+            override fun onPageFinished(view: WebView?, url: String?) {
+                super.onPageFinished(view, url)
+                viewModel.onPageFinished()
             }
 
-            override fun shouldOverrideUrlLoading(view: WebView?, request: WebResourceRequest?): Boolean {
-                return false
+            override fun onReceivedError(view: WebView?, errorCode: Int, description: String?, failingUrl: String?) {
+                super.onReceivedError(view, errorCode, description, failingUrl)
+                viewModel.onWebViewError()
+            }
+
+            override fun onReceivedError(view: WebView?, request: WebResourceRequest?, error: WebResourceError?) {
+                super.onReceivedError(view, request, error)
+                viewModel.onWebViewError()
+            }
+
+            override fun onReceivedHttpError(
+                view: WebView?,
+                request: WebResourceRequest?,
+                errorResponse: WebResourceResponse?
+            ) {
+                super.onReceivedHttpError(view, request, errorResponse)
+                viewModel.onWebViewError()
             }
         }
 
@@ -53,13 +78,18 @@ class VideoFragment : Fragment() {
     }
 
     /** Initial scale based on video width */
-    private fun getInitialScale() = ((getScreenWidth(activity!!) / IFRAME_WIDTH.toFloat()) * 97.5).toInt()
+    private fun getInitialScale() =
+        ((getScreenWidth(activity!!) / IFRAME_WIDTH.toFloat()) * VIDEO_WIDTH_PERCENT).toInt()
 
     private fun initViewModel() {
         viewModel = ViewModelProviders.of(this).get(VideoViewModel::class.java)
 
         viewModel.htmlLiveData.observe(this) {
-            webView.loadData(it.value, "text/html", "UTF-8")
+            webView.loadData(it.value, DATA_MIME_TYPE, DATA_ENCODING)
+        }
+
+        viewModel.loadingLiveData.observe(this) {
+            swipeRefresh.isRefreshing = it
         }
     }
 }
