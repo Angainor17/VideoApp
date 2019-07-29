@@ -1,4 +1,4 @@
-package com.joydev.videoapp.videoScreen.clients.listners
+package com.joydev.videoapp.videoScreen.listners
 
 /**
  * Listener for WebView loading events

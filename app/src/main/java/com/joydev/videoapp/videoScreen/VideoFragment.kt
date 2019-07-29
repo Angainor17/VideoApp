@@ -14,7 +14,6 @@ import com.joydev.videoapp.videoScreen.clients.ChromeWebViewClient
 import com.joydev.videoapp.videoScreen.clients.CustomWebViewClient
 import kotlinx.android.synthetic.main.fragment_video.*
 
-
 private const val VIDEO_WIDTH_PERCENT = 97.5f
 private const val DATA_MIME_TYPE = "text/html"
 private const val DATA_ENCODING = "UTF-8"
@@ -26,7 +25,9 @@ class VideoFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         initViewModel()
-        viewModel.loadInitUrl()
+        if (savedInstanceState == null) {
+            viewModel.loadInitUrl()
+        }
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? =

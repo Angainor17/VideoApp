@@ -2,7 +2,7 @@ package com.joydev.videoapp.videoScreen
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.joydev.videoapp.videoScreen.clients.listners.CustomWebViewClientListener
+import com.joydev.videoapp.videoScreen.listners.CustomWebViewClientListener
 
 const val IFRAME_WIDTH = 560
 const val IFRAME_HEIGHT = 315

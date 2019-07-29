@@ -11,7 +11,9 @@
             android:theme="@style/AppTheme"
             tools:ignore="GoogleAppIndexingWarning">
 
-        <activity android:name=".navActivity.NavActivity">
+        <activity
+                android:name=".navActivity.NavActivity"
+                android:configChanges="orientation|screenSize">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
 

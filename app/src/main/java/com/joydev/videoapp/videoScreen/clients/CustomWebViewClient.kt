@@ -3,7 +3,7 @@ package com.joydev.videoapp.videoScreen.clients
 import android.os.Build
 import android.webkit.*
 import androidx.annotation.RequiresApi
-import com.joydev.videoapp.videoScreen.clients.listners.CustomWebViewClientListener
+import com.joydev.videoapp.videoScreen.listners.CustomWebViewClientListener
 
 /*** WebView Client for html loading and notifying about progress*/
 class CustomWebViewClient(private val listener: CustomWebViewClientListener) : WebViewClient() {
