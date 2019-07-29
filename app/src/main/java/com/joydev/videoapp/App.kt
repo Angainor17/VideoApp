@@ -12,7 +12,6 @@ class App : Application() {
         super.onCreate()
         kodein = Kodein {
             bind<Context>() with provider { this@App }
-
         }
     }
 

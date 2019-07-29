@@ -4,13 +4,16 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.webkit.*
+import android.webkit.WebSettings
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProviders
 import androidx.lifecycle.observe
 import com.joydev.videoapp.R
 import com.joydev.videoapp.utils.getScreenWidth
+import com.joydev.videoapp.videoScreen.clients.ChromeWebViewClient
+import com.joydev.videoapp.videoScreen.clients.CustomWebViewClient
 import kotlinx.android.synthetic.main.fragment_video.*
+
 
 private const val VIDEO_WIDTH_PERCENT = 97.5f
 private const val DATA_MIME_TYPE = "text/html"
@@ -23,6 +26,7 @@ class VideoFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         initViewModel()
+        viewModel.loadInitUrl()
     }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? =
@@ -42,39 +46,14 @@ class VideoFragment : Fragment() {
         webView.settings.apply {
             javaScriptEnabled = true
             loadWithOverviewMode = true
+            allowFileAccess = true
+            setAppCacheEnabled(true)
             layoutAlgorithm = WebSettings.LayoutAlgorithm.SINGLE_COLUMN
             pluginState = WebSettings.PluginState.ON
         }
 
-        webView.webChromeClient = object : WebChromeClient() {}
-        webView.webViewClient = object : WebViewClient() {
-
-            override fun onPageFinished(view: WebView?, url: String?) {
-                super.onPageFinished(view, url)
-                viewModel.onPageFinished()
-            }
-
-            override fun onReceivedError(view: WebView?, errorCode: Int, description: String?, failingUrl: String?) {
-                super.onReceivedError(view, errorCode, description, failingUrl)
-                viewModel.onWebViewError()
-            }
-
-            override fun onReceivedError(view: WebView?, request: WebResourceRequest?, error: WebResourceError?) {
-                super.onReceivedError(view, request, error)
-                viewModel.onWebViewError()
-            }
-
-            override fun onReceivedHttpError(
-                view: WebView?,
-                request: WebResourceRequest?,
-                errorResponse: WebResourceResponse?
-            ) {
-                super.onReceivedHttpError(view, request, errorResponse)
-                viewModel.onWebViewError()
-            }
-        }
-
-        viewModel.loadInitUrl()
+        webView.webChromeClient = ChromeWebViewClient(activity!!)
+        webView.webViewClient = CustomWebViewClient(viewModel)
     }
 
     /** Initial scale based on video width */
@@ -85,7 +64,7 @@ class VideoFragment : Fragment() {
         viewModel = ViewModelProviders.of(this).get(VideoViewModel::class.java)
 
         viewModel.htmlLiveData.observe(this) {
-            webView.loadData(it.value, DATA_MIME_TYPE, DATA_ENCODING)
+            webView.loadData(it, DATA_MIME_TYPE, DATA_ENCODING)
         }
 
         viewModel.loadingLiveData.observe(this) {
