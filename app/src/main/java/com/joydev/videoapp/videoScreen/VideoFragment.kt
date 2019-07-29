@@ -33,9 +33,6 @@ class VideoFragment : Fragment() {
         webView.setInitialScale(getInitialScale())
         webView.settings.apply {
             javaScriptEnabled = true
-            useWideViewPort = true
-            builtInZoomControls = true
-            displayZoomControls = false
             loadWithOverviewMode = true
             layoutAlgorithm = WebSettings.LayoutAlgorithm.SINGLE_COLUMN
             pluginState = WebSettings.PluginState.ON
@@ -56,7 +53,7 @@ class VideoFragment : Fragment() {
     }
 
     /** Initial scale based on video width */
-    private fun getInitialScale() = ((getScreenWidth(activity!!) / IFRAME_WIDTH) * 100)
+    private fun getInitialScale() = ((getScreenWidth(activity!!) / IFRAME_WIDTH.toFloat()) * 97.5).toInt()
 
     private fun initViewModel() {
         viewModel = ViewModelProviders.of(this).get(VideoViewModel::class.java)
