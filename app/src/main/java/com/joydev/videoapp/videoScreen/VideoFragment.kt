@@ -4,13 +4,12 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.webkit.WebResourceRequest
-import android.webkit.WebView
-import android.webkit.WebViewClient
+import android.webkit.*
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProviders
 import androidx.lifecycle.observe
 import com.joydev.videoapp.R
+import com.joydev.videoapp.utils.getScreenWidth
 import kotlinx.android.synthetic.main.fragment_video.*
 
 class VideoFragment : Fragment() {
@@ -31,28 +30,38 @@ class VideoFragment : Fragment() {
     }
 
     private fun initViews() {
+        webView.setInitialScale(getInitialScale())
         webView.settings.apply {
             javaScriptEnabled = true
+            useWideViewPort = true
+            builtInZoomControls = true
+            displayZoomControls = false
+            loadWithOverviewMode = true
+            layoutAlgorithm = WebSettings.LayoutAlgorithm.SINGLE_COLUMN
+            pluginState = WebSettings.PluginState.ON
         }
 
+        webView.webChromeClient = object : WebChromeClient() {}
         webView.webViewClient = object : WebViewClient() {
-
             override fun shouldOverrideUrlLoading(view: WebView?, url: String?): Boolean {
-                return super.shouldOverrideUrlLoading(view, url)
+                return false
             }
 
             override fun shouldOverrideUrlLoading(view: WebView?, request: WebResourceRequest?): Boolean {
-                return super.shouldOverrideUrlLoading(view, request)
+                return false
             }
         }
 
         viewModel.loadInitUrl()
     }
 
+    /** Initial scale based on video width */
+    private fun getInitialScale() = ((getScreenWidth(activity!!) / IFRAME_WIDTH) * 100)
+
     private fun initViewModel() {
         viewModel = ViewModelProviders.of(this).get(VideoViewModel::class.java)
 
-        viewModel.webViewLiveData.observe(this) {
+        viewModel.htmlLiveData.observe(this) {
             webView.loadData(it.value, "text/html", "UTF-8")
         }
     }
